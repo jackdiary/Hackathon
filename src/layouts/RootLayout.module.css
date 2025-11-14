@@ -1,0 +1,128 @@
+.shell {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #eff6ff, #e0e7ff 45%, #f8fafc);
+  color: #0f172a;
+}
+
+.header {
+  padding: 1.25rem 4vw 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.noticeBar {
+  width: 100%;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.8);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.noticeTrack {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 18s linear infinite;
+}
+
+.noticeText {
+  color: #f8fafc;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.5rem;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-200%);
+  }
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navItem {
+  position: relative;
+}
+
+.link {
+  text-decoration: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: #475569;
+  transition: all 0.2s ease;
+}
+
+.link:hover {
+  border-color: rgba(15, 23, 42, 0.15);
+  color: #0f172a;
+}
+
+.active {
+  border-color: rgba(15, 23, 42, 0.25);
+  background: rgba(255, 255, 255, 0.8);
+  color: #0f172a;
+}
+
+.submenu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 0.65rem;
+  padding: 0.8rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 35px rgba(15, 23, 42, 0.18);
+  min-width: 480px;
+}
+
+.hasMenu:hover .submenu,
+.hasMenu:focus-within .submenu {
+  display: flex;
+}
+
+.subLink {
+  flex: 1;
+  text-decoration: none;
+  border-radius: 14px;
+  padding: 0.95rem 1rem;
+  background: linear-gradient(135deg, rgba(224, 231, 255, 0.6), rgba(236, 254, 255, 0.7));
+  border: 1px solid transparent;
+  color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+}
+
+.subLink:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.16);
+}
+
+.subActive {
+  border-color: rgba(99, 102, 241, 0.6);
+  box-shadow: 0 10px 22px rgba(99, 102, 241, 0.35);
+}
+
+.subLabel {
+  font-weight: 600;
+}
+
+.subSummary {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.main {
+  padding: 0 4vw 4rem;
+}

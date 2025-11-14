@@ -1,0 +1,132 @@
+.board {
+  max-width: 1080px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+}
+
+.transparent-app {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+.tileGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.tile {
+  border-radius: 28px;
+  padding: 2.5rem 2.5rem;
+  min-height: 17rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.12);
+  position: relative;
+}
+
+.creativityTile {
+  overflow: hidden;
+  position: relative;
+}
+
+.creativityMain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  color: #0f172a;
+  text-decoration: none;
+  width: 100%;
+  min-height: 100%;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+}
+
+.creativityHint {
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.creativityMenu {
+  position: absolute;
+  inset: 0;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.creativityTile:hover .creativityMenu,
+.creativityTile:focus-within .creativityMenu {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.creativityTile:hover .creativityMain,
+.creativityTile:focus-within .creativityMain {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.creativityMenuLink {
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1rem 1.25rem;
+  border-radius: 18px;
+  background: rgba(205, 192, 192, 0.95);
+  color: #0f172a;
+  text-decoration: none;
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.2);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.creativityMenuLink:hover,
+.creativityMenuLink:focus-visible {
+  transform: translateX(4px);
+  background: #fff;
+}
+
+.creativityMenuLabel {
+  font-weight: 700;
+}
+
+.creativityMenuSummary {
+  font-size: 0.9rem;
+  color: rgba(15, 23, 42, 0.75);
+}
+
+@media (max-width: 960px) {
+  .tileGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .board {
+    padding: 1.75rem;
+  }
+
+  .tileGrid {
+    grid-template-columns: 1fr;
+  }
+}
