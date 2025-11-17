@@ -1,0 +1,150 @@
+<div class="sd-module sd-forest">
+
+  <!-- 숲 배경 데코 (나무 + 동물 실루엣) -->
+  <div class="sd-forest-decor">
+    <div class="sd-tree sd-tree-left"></div>
+    <div class="sd-tree sd-tree-right"></div>
+
+    <div class="sd-animal sd-animal-rabbit"></div>
+    <div class="sd-animal sd-animal-squirrel"></div>
+    <div class="sd-animal sd-animal-bird"></div>
+  </div>
+
+  <!-- 상단 타이틀 -->
+  <header class="sd-forest-header">
+    <h1>숲속 곰곰이 스마트 토론 교실</h1>
+    <p>숲속 친구 곰곰이와 함께 사이좋게 이야기해 봐요.</p>
+  </header>
+
+  <div class="sd-forest-inner">
+
+    <!-- 왼쪽 : 곰곰이 + 실시간 발언 -->
+    <section class="sd-forest-left">
+
+      <!-- 숲 바닥 위 곰곰이 -->
+      <div class="sd-bear-area">
+        <div class="sd-bear-hill"></div>
+        <img
+          id="sd-bear-img"
+          class="sd-bear-img"
+          src="/img/bear_4.png"
+          alt="토론 도우미 곰곰이"
+        />
+      </div>
+
+      <!-- 곰곰이 말풍선 -->
+      <div class="sd-bear-speech">
+        <div id="sd-bear-bubble" class="sd-bear-bubble">
+          오늘은 어떤 주제로 이야기해 볼까요?
+        </div>
+      </div>
+
+      <!-- 실시간 발언 영역 -->
+      <div class="sd-live-board">
+        <h3>지금 친구들이 말한 내용</h3>
+        <div id="sd-live-text" class="sd-live-text"></div>
+      </div>
+
+      <!-- 상태 + 팁 -->
+      <div class="sd-status-row">
+        <span class="sd-status-label">곰곰이 진단</span>
+        <span id="sd-conflict-status" class="sd-status-indicator">
+          지금은 평화로운 숲이에요
+        </span>
+      </div>
+
+      <div class="sd-tip-box">
+        <div class="sd-tip-title">곰곰이의 토론 약속</div>
+        <ul class="sd-tip-list">
+          <li>한 번에 한 명씩 차례대로 말해요.</li>
+          <li>친구가 말할 때는 끼어들지 않아요.</li>
+          <li>다른 생각도 틀린 것이 아니라 다른 것일 뿐이에요.</li>
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- 오른쪽 : 토론 설정 + 로그 -->
+    <section class="sd-forest-right">
+
+      <!-- 설정 판 -->
+      <div class="sd-panel sd-wood-panel">
+        <h3>토론 준비하기</h3>
+
+        <!-- 시간 -->
+        <div class="sd-input-group sd-time-group">
+          <label>지금 시간</label>
+          <div id="sd-current-time" class="sd-time-display">--:--:--</div>
+        </div>
+
+        <!-- 참가자 -->
+        <div class="sd-input-group">
+          <label>참가자 명단</label>
+          <div id="sd-tag-box" class="sd-tag-box">
+            <input
+              id="sd-participant-input"
+              class="sd-tag-input"
+              type="text"
+              placeholder="이름을 적고 Enter를 눌러 추가해요"
+            />
+          </div>
+        </div>
+
+        <!-- 장소 -->
+        <div class="sd-input-group">
+          <label for="sd-location">토론 장소</label>
+          <input
+            id="sd-location"
+            type="text"
+            class="sd-text-input"
+            placeholder="예: 3학년 2반 교실"
+          />
+        </div>
+
+        <!-- 주제 -->
+        <div class="sd-input-group">
+          <label for="sd-topic">토론 주제</label>
+          <input
+            id="sd-topic"
+            type="text"
+            class="sd-text-input"
+            placeholder="예: 숙제를 언제 하는 것이 좋을까요?"
+          />
+        </div>
+
+        <!-- 버튼 -->
+        <div class="sd-controls">
+          <button id="sd-start" class="sd-btn sd-btn-start">토론 시작</button>
+          <button id="sd-stop" class="sd-btn sd-btn-stop">토론 종료</button>
+        </div>
+      </div>
+
+      <!-- 로그 판 -->
+      <div class="sd-panel sd-log-panel">
+        <h3>토론 기록</h3>
+        <div id="sd-log-list" class="sd-log-list"></div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- 곰곰이 중재 모달 -->
+  <div id="sd-mediation-card" class="sd-mediation-card" style="display:none;">
+    <div class="sd-mediation-content">
+      <div class="sd-mediation-bear">
+        <img
+          src="/img/bear_2.png"
+          alt="중재 중인 곰곰이"
+          class="sd-mediation-bear-img"
+        />
+      </div>
+      <h4>곰곰이의 중재 한마디</h4>
+      <p id="sd-mediation-text"></p>
+      <button id="sd-mediation-close" class="sd-btn sd-btn-close">
+        다시 차분하게 이야기할게요
+      </button>
+    </div>
+  </div>
+
+</div>
