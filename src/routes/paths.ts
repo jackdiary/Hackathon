@@ -23,6 +23,7 @@ export const ROUTES = {
   collaboration: {
     root: ROUTE_BASE.collaboration,
     smartDiscussion: `${ROUTE_BASE.collaboration}/smart-discussion`,
+    perspective: `${ROUTE_BASE.collaboration}/perspective`,
   },
   dashboard: {
     root: ROUTE_BASE.dashboard,

@@ -5,6 +5,7 @@ import aiLiteracyBg from '../assets/ai-literacy.png';
 import immersiveBg from '../assets/aa.png';
 import classBoardBg from '../assets/ge.png';
 import collaborationBg from '../assets/non.png';
+import activityLogBg from '../assets/rr.png';
 import {
   CREATIVITY_BASE_PATH,
   creativityModules,
@@ -61,6 +62,12 @@ const collaborationModules: TileSubmenuItem[] = [
     summary: '음성 인식으로 갈등을 중재하는 토론 수업',
     path: ROUTES.collaboration.smartDiscussion,
   },
+  {
+    key: 'perspective-switcher',
+    menuLabel: '입장 바꾸어 생각하기',
+    summary: 'AI로 상대관점을 이해하고 말해 보기',
+    path: ROUTES.collaboration.perspective,
+  },
 ];
 
 const tileData: TileConfig[] = [
@@ -88,7 +95,7 @@ const tileData: TileConfig[] = [
     submenu: collaborationModules,
   },
   {
-    title: ',',
+    title: '　　',
     color: '#51dc5c',
     path: ROUTES.aiLiteracy.root,
     backgroundImage: `url(${aiLiteracyBg})`,
@@ -96,7 +103,14 @@ const tileData: TileConfig[] = [
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
   },
-  { title: '나의활동 기록', color: '#7b8fe9', path: ROUTES.dashboard.activityLog },
+  {
+    title: '   ',
+    path: ROUTES.dashboard.activityLog,
+    backgroundImage: `url(${activityLogBg})`,
+    backgroundSize: '100% 100%',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  },
   {
     title: <h2>학급 게시판</h2>,
     path: ROUTES.dashboard.classBoard,

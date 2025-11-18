@@ -62,12 +62,10 @@ function RootLayout() {
         <div className={styles.noticeBar}>
           <div className={styles.noticeTrack}>
             <p className={styles.noticeText}>
-              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! · 글쓰기 듀오에 새 학년별 템플릿이
-              추가됐습니다. · 아트 워크숍은 오후 2시 이후 예약 없이 사용 가능해요.
+              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! · 3학년 2반 11번 이평안 오늘생일!🗂️ .
             </p>
             <p className={styles.noticeText} aria-hidden="true">
-              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! · 글쓰기 듀오에 새 학년별 템플릿이
-              추가됐습니다. · 아트 워크숍은 오후 2시 이후 예약 없이 사용 가능해요.
+              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! · 3학년 2반 11번 이평안 오늘생일!🗂️ .
             </p>
           </div>
         </div>

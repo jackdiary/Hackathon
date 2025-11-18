@@ -23,13 +23,16 @@ const db = initializeDatabase();
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'models/gemini-2.5-flash';
+let geminiClient = null;
 let sejongModel = null;
+let perspectiveModel = null;
 let sejongKnowledgeBase = '';
 
 if (GEMINI_KEY) {
   try {
-    const genAI = new GoogleGenerativeAI(GEMINI_KEY);
-    sejongModel = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+    geminiClient = new GoogleGenerativeAI(GEMINI_KEY);
+    sejongModel = geminiClient.getGenerativeModel({ model: GEMINI_MODEL });
+    perspectiveModel = geminiClient.getGenerativeModel({ model: GEMINI_MODEL });
     console.log(`✓ Gemini client initialized with model: ${GEMINI_MODEL}`);
   } catch (error) {
     console.error('Failed to initialize Gemini client:', error.message);
@@ -297,6 +300,53 @@ ${retrievedContext || '관련 자료 없음.'}
     return res
       .status(500)
       .json({ message: '짐이 지금 생각이 많으니라. 잠시 후 다시 물어보겠는가?' });
+  }
+});
+
+app.post('/api/perspective', async (req, res) => {
+  if (!perspectiveModel) {
+    return res.status(500).json({ ok: false, message: 'AI 분석 기능이 비활성화되어 있어요.' });
+  }
+
+  const { situation, my_view: myView } = req.body || {};
+  if (!situation || !myView) {
+    return res.status(400).json({ ok: false, message: '상황과 나의 생각을 모두 적어 주세요.' });
+  }
+
+  const prompt = `
+너는 초등학생 상담 교사이다. 아래 학생의 상황과 느낀점, 말한 내용을 읽고, 상대방 친구의 입장에서 상황을 분석해라.
+반드시 JSON 형식으로만 응답하며, 속성은 their_view, their_emotion, inner_message, better_expression 네 가지다.
+각 필드는 한국어 문장으로 1~2문장으로 작성한다.
+
+상황:
+${situation}
+
+나의 생각/말:
+${myView}
+
+JSON:
+`;
+
+  try {
+    const result = await perspectiveModel.generateContent(prompt);
+    const response = await result.response;
+    const rawText = response.text().trim();
+    const jsonText = rawText.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(jsonText);
+
+    return res.json({
+      ok: true,
+      their_view: parsed.their_view || '',
+      their_emotion: parsed.their_emotion || '',
+      inner_message: parsed.inner_message || '',
+      better_expression: parsed.better_expression || '',
+    });
+  } catch (error) {
+    console.error('Perspective API error:', error);
+    return res.status(500).json({
+      ok: false,
+      message: '곰곰이가 친구의 마음을 분석하지 못했어요. 잠시 후 다시 시도해주세요.',
+    });
   }
 });
 

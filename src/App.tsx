@@ -26,6 +26,7 @@ import WritingAtelier from './features/creativity/WritingAtelier';
 import ArtWorkshop from './features/creativity/ArtWorkshop';
 import CreativityLanding from './features/creativity/CreativityLanding';
 import Home from './pages/Home'; // Re-import Home for the root route
+import { PerspectiveSwitcher } from './features/perspectiveSwitcher/PerspectiveSwitcher';
 
 const noopLessonHook = () => {};
 
@@ -76,6 +77,7 @@ function App() {
                 <Route path={ROUTES.immersive.history} element={<HistoricalInterviewLesson />} />
                 <Route path={ROUTES.immersive.coach} element={<FitnessCoachLesson />} />
                 <Route path={ROUTES.collaboration.smartDiscussion} element={<SmartDiscussion />} />
+                <Route path={ROUTES.collaboration.perspective} element={<PerspectiveSwitcher />} />
                 <Route path={ROUTES.dashboard.activityLog} element={<ActivityLogPage />} />
                 <Route path={ROUTES.dashboard.classBoard} element={<ClassBoardPage />} />
               </Route>
