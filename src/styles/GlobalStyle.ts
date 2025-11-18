@@ -17,15 +17,33 @@ export const GlobalStyle = createGlobalStyle`
     font-family: ${({ theme }) => theme.fonts.primary};
     font-size: ${({ theme }) => theme.fonts.sizes.small};
     color: ${({ theme }) => theme.colors.text};
-    background-color: ${({ theme }) => theme.colors.background};
+    background: linear-gradient(135deg, ${({ theme }) => theme.colors.chalkboard.darkGreen} 0%, ${({ theme }) => theme.colors.chalkboard.green} 100%);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 24px solid ${({ theme }) => theme.colors.chalkboard.woodBorder};
+    box-shadow: 
+      inset 0 0 20px rgba(0, 0, 0, 0.3),
+      inset 0 4px 8px rgba(0, 0, 0, 0.2),
+      0 0 0 4px ${({ theme }) => theme.colors.chalkboard.woodDark};
+    pointer-events: none;
+    z-index: 9999;
   }
 
   #root {
     width: 100%;
     min-height: 100vh;
+    padding: 40px;
   }
 
   h1 {
@@ -89,12 +107,10 @@ export const GlobalStyle = createGlobalStyle`
     body {
       font-size: ${({ theme }) => theme.fonts.sizes.medium};
       /* Prevent scrolling on TV display */
-      overflow: hidden;
     }
     
     #root {
       max-height: 100vh;
-      overflow: hidden;
     }
     
     h1 {

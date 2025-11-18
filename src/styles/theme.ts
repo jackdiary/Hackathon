@@ -10,6 +10,18 @@ export const theme = {
       body: '#87CEEB',
       hat: '#FFD700',
       eyes: '#1a1a1a'        // Darker for better contrast
+    },
+    // Chalkboard UI Theme
+    chalkboard: {
+      green: '#2d5f3f',      // 칠판 초록색
+      darkGreen: '#1e4d2b',  // 더 진한 초록 (그라데이션용)
+      woodBorder: '#5d4037', // 갈색 나무테두리
+      woodDark: '#3e2723',   // 어두운 나무 (그림자용)
+      noticeBar: '#1e3a5f',  // 공지사항 네이비
+      postit: '#f5f5dc',     // 포스트잇 베이지
+      bodyBg: '#e8e8e8',     // Body 배경
+      logout: '#dc3545',     // 로그아웃 빨강
+      chalkWhite: '#f0f0f0', // 분필 흰색
     }
   },
   fonts: {

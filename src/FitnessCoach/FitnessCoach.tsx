@@ -161,7 +161,7 @@ function FitnessCoach({ onStartLesson, onEndLesson }: FitnessCoachProps) {
         &times; 메뉴로 돌아가기
       </button>
       <header className="coach-header">
-        <h2>AI 댄스 챌린지</h2>
+        <h2>AI 체육 코치</h2>
       </header>
 
       <main className="coach-main-layout">

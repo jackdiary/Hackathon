@@ -53,7 +53,8 @@ function HistoricalInterview({ onStartLesson, onEndLesson }: HistoricalInterview
     setInputValue('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/ask-sejong', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${apiUrl}/api/ask-sejong`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: userQuestion }),
@@ -122,9 +123,6 @@ function HistoricalInterview({ onStartLesson, onEndLesson }: HistoricalInterview
 
   return (
     <div className="interview-page-container historical-interview-page">
-      <button className="exit-lesson-btn" onClick={handleEnd}>
-        &times; 메뉴로 돌아가기
-      </button>
       <div className="interview-character-zone">
         <div className="character-image-wrapper">
           <img src="/sejong.jpg" alt="AI 세종대왕" className={isAiThinking ? 'thinking' : ''} />

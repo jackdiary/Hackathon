@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import changImg from '../assets/chang.png';
 import aiLiteracyBg from '../assets/ai-literacy.png';
 import immersiveBg from '../assets/aa.png';
+import classBoardBg from '../assets/ge.png';
+import collaborationBg from '../assets/non.png';
 import {
   CREATIVITY_BASE_PATH,
   creativityModules,
@@ -78,8 +80,11 @@ const tileData: TileConfig[] = [
     backgroundRepeat: 'no-repeat',
   },
   {
-    title: '논리/협업',
-    color: '#d9fa4a',
+    title: '..',
+    backgroundImage: `url(${collaborationBg})`,
+    backgroundSize: '100% 100%',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
     submenu: collaborationModules,
   },
   {
@@ -92,7 +97,14 @@ const tileData: TileConfig[] = [
     backgroundRepeat: 'no-repeat',
   },
   { title: '나의활동 기록', color: '#7b8fe9', path: ROUTES.dashboard.activityLog },
-  { title: '학급 게시판', color: '#cf77d5', path: ROUTES.dashboard.classBoard },
+  {
+    title: <h2>학급 게시판</h2>,
+    path: ROUTES.dashboard.classBoard,
+    backgroundImage: `url(${classBoardBg})`,
+    backgroundSize: '100% 100%',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  },
 ];
 
 const hasSubmenu = (tile: TileConfig): tile is TileConfig & { submenu: TileSubmenuItem[] } =>

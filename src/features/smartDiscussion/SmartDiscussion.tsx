@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './SmartDiscussion.css';
 
+type Team = 'red' | 'blue';
+
+const TEAM_LABELS: Record<Team, string> = {
+  red: '레드팀',
+  blue: '블루팀',
+};
+
 const BEAR_FRAMES = {
   idle: '/images/smart-discussion/bear_4.png',
   idleAlt: '/images/smart-discussion/bear_1.png',
@@ -29,6 +36,13 @@ type SpeechRecognitionLike = {
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
 };
 
+type DiscussionLog = {
+  id: number;
+  timestamp: string;
+  text: string;
+  team?: Team;
+};
+
 const formatTime = (date: Date) => {
   const hh = String(date.getHours()).padStart(2, '0');
   const mm = String(date.getMinutes()).padStart(2, '0');
@@ -43,7 +57,7 @@ export const SmartDiscussion = () => {
   const [location, setLocation] = useState('');
   const [topic, setTopic] = useState('');
   const [liveSpeech, setLiveSpeech] = useState('');
-  const [logs, setLogs] = useState<string[]>([]);
+  const [logs, setLogs] = useState<DiscussionLog[]>([]);
   const [bearMessage, setBearMessage] = useState('오늘은 어떤 주제로 이야기해볼까?');
   const [bearFrame, setBearFrame] = useState(BEAR_FRAMES.idle);
   const [isBearShocked, setIsBearShocked] = useState(false);
@@ -52,11 +66,19 @@ export const SmartDiscussion = () => {
   const [conflictStatus, setConflictStatus] = useState('지금은 평화로운 숲이에요');
   const [showMediation, setShowMediation] = useState(false);
   const [mediationText, setMediationText] = useState('');
+  const [activeTeam, setActiveTeam] = useState<Team | null>(null);
+  const [noteTeam, setNoteTeam] = useState<Team>('red');
+  const [noteText, setNoteText] = useState('');
   const idleIntervalRef = useRef<number | null>(null);
   const idleToggleRef = useRef(false);
   const timeoutsRef = useRef<number[]>([]);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const discussingRef = useRef(false);
+  const activeTeamRef = useRef<Team | null>(null);
+  const lastTeamRef = useRef<Team | null>(null);
+  const isListeningRef = useRef(false);
+  const logIdRef = useRef(0);
+  const logListRef = useRef<HTMLDivElement | null>(null);
 
   const scheduleTimeout = useCallback((cb: () => void, delay: number) => {
     const timeout = window.setTimeout(cb, delay);
@@ -106,10 +128,10 @@ export const SmartDiscussion = () => {
     scheduleTimeout(() => startBearIdle(), 800);
   }, [scheduleTimeout, startBearIdle, stopBearIdle]);
 
-  const addLogEntry = useCallback((text: string) => {
-    const now = new Date();
-    const timestamp = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-    setLogs((prev) => [...prev, `[${timestamp}] ${text}`]);
+  const addLogEntry = useCallback((text: string, team?: Team) => {
+    const id = ++logIdRef.current;
+    const timestamp = formatTime(new Date());
+    setLogs((prev) => [...prev, { id, timestamp, text, team }]);
   }, []);
 
   const handleConflict = useCallback(
@@ -125,8 +147,13 @@ export const SmartDiscussion = () => {
 
   const handleSpeech = useCallback(
     (text: string) => {
-      setLiveSpeech(text);
-      addLogEntry(text);
+      const team = activeTeamRef.current ?? lastTeamRef.current ?? undefined;
+      if (team) {
+        lastTeamRef.current = team;
+      }
+      const prefix = team ? `[${TEAM_LABELS[team]}] ` : '';
+      setLiveSpeech(`${prefix}${text}`);
+      addLogEntry(`${team ? `${TEAM_LABELS[team]}: ` : ''}${text}`, team);
       bearTalk();
 
       const hasConflict = CONFLICT_KEYWORDS.some((keyword) => text.includes(keyword));
@@ -153,8 +180,10 @@ export const SmartDiscussion = () => {
   }, [clearScheduledTimeouts, startBearIdle, stopBearIdle]);
 
   useEffect(() => {
-    discussingRef.current = isDiscussionActive;
-  }, [isDiscussionActive]);
+    if (logListRef.current) {
+      logListRef.current.scrollTop = logListRef.current.scrollHeight;
+    }
+  }, [logs]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -181,11 +210,17 @@ export const SmartDiscussion = () => {
     recognition.continuous = true;
 
     recognition.onstart = () => {
-      setBearMessage('친구들이 말하는 걸 듣고 있어요!');
+      isListeningRef.current = true;
+      if (activeTeamRef.current) {
+        setBearMessage(`${TEAM_LABELS[activeTeamRef.current]}이(가) 말하는 중이에요!`);
+      }
     };
     recognition.onend = () => {
+      isListeningRef.current = false;
       if (discussingRef.current) {
         recognition.start();
+      } else if (!activeTeamRef.current) {
+        setBearMessage('버튼을 눌러 이야기해봐요!');
       }
     };
     recognition.onresult = (event: SpeechRecognitionEventLike) => {
@@ -213,29 +248,86 @@ export const SmartDiscussion = () => {
     setParticipants((prev) => prev.filter((p) => p !== name));
   }, []);
 
-  const handleStartDiscussion = useCallback(() => {
-    if (!recognitionRef.current) {
-      setBearMessage('이 브라우저에서는 음성 인식을 사용할 수 없어요.');
-      return;
-    }
-    setLiveSpeech('');
-    setLogs([]);
-    setBearMessage('토론을 시작해볼까요?');
-    discussingRef.current = true;
-    setIsDiscussionActive(true);
-    bearCelebrate();
-    recognitionRef.current.start();
-  }, [bearCelebrate]);
+  const handleTeamPress = useCallback(
+    (team: Team) => {
+      if (!recognitionRef.current) {
+        setBearMessage('이 브라우저에서는 음성 인식을 사용할 수 없어요.');
+        return;
+      }
+
+      setActiveTeam(team);
+      activeTeamRef.current = team;
+      lastTeamRef.current = team;
+      discussingRef.current = true;
+      setBearMessage(`${TEAM_LABELS[team]}이(가) 말하는 중이에요!`);
+      setLiveSpeech('');
+
+      if (!isDiscussionActive) {
+        setLogs([]);
+        logIdRef.current = 0;
+        setLogs([]);
+        logIdRef.current = 0;
+        setIsDiscussionActive(true);
+        setShowMediation(false);
+        setConflictStatus('지금은 평화로운 숲이에요');
+        bearCelebrate();
+        addLogEntry(`${TEAM_LABELS[team]}이(가) 토론을 시작했어요.`, team);
+      } else {
+        addLogEntry(`${TEAM_LABELS[team]} 차례가 시작됐어요.`, team);
+      }
+
+      if (!isListeningRef.current) {
+        try {
+          recognitionRef.current.start();
+        } catch (error) {
+          console.error('Speech recognition start failed', error);
+        }
+      }
+    },
+    [addLogEntry, bearCelebrate, isDiscussionActive],
+  );
+
+  const handleTeamRelease = useCallback(
+    (shouldResetSession = false) => {
+      const team = activeTeamRef.current;
+      if (!team) {
+        return;
+      }
+      discussingRef.current = false;
+      if (isListeningRef.current) {
+        recognitionRef.current?.stop();
+      }
+      if (!shouldResetSession) {
+        addLogEntry(`${TEAM_LABELS[team]}이(가) 발언을 마쳤어요.`, team);
+        setBearMessage('다음 팀 버튼을 눌러 주세요!');
+      }
+      activeTeamRef.current = null;
+      setActiveTeam(null);
+      setLiveSpeech('');
+    },
+    [addLogEntry],
+  );
 
   const handleStopDiscussion = useCallback(() => {
+    handleTeamRelease(true);
     discussingRef.current = false;
     setIsDiscussionActive(false);
     recognitionRef.current?.stop();
     setBearMessage('오늘 토론이 끝났어요!');
+    setLiveSpeech('');
     stopBearIdle();
     setBearFrame(BEAR_FRAMES.wink);
     scheduleTimeout(() => startBearIdle(), 1200);
-  }, [scheduleTimeout, startBearIdle, stopBearIdle]);
+  }, [handleTeamRelease, scheduleTimeout, startBearIdle, stopBearIdle]);
+
+  const handleManualLog = useCallback(() => {
+    const trimmed = noteText.trim();
+    if (!trimmed) {
+      return;
+    }
+    addLogEntry(trimmed, noteTeam);
+    setNoteText('');
+  }, [addLogEntry, noteTeam, noteText]);
 
   const closeMediationCard = useCallback(() => {
     setShowMediation(false);
@@ -275,7 +367,15 @@ export const SmartDiscussion = () => {
 
           <div className="sd-live-board">
             <h3>지금 친구들이 말한 내용</h3>
-            <div className="sd-live-text">{liveSpeech || '아직 인식된 말이 없어요.'}</div>
+            <div className="sd-live-text">
+              {liveSpeech ||
+                (activeTeam
+                  ? `${TEAM_LABELS[activeTeam]}이(가) 준비 중이에요.`
+                  : '레드/블루 버튼을 누르고 말해 보세요.')}
+            </div>
+            {activeTeam && (
+              <div className={`sd-team-indicator team-${activeTeam}`}>현재 차례: {TEAM_LABELS[activeTeam]}</div>
+            )}
           </div>
 
           <div className="sd-status-line">
@@ -360,11 +460,35 @@ export const SmartDiscussion = () => {
             <div className="sd-btn-row">
               <button
                 type="button"
-                className="sd-btn sd-btn-start"
-                onClick={handleStartDiscussion}
-                disabled={!speechSupported && isDiscussionActive}
+                className={`sd-btn sd-btn-team sd-btn-team-red ${activeTeam === 'red' ? 'is-active' : ''}`}
+                onMouseDown={() => handleTeamPress('red')}
+                onMouseUp={() => handleTeamRelease()}
+                onMouseLeave={() => handleTeamRelease()}
+                onTouchStart={(event) => {
+                  event.preventDefault();
+                  handleTeamPress('red');
+                }}
+                onTouchEnd={() => handleTeamRelease()}
+                onTouchCancel={() => handleTeamRelease()}
+                disabled={!speechSupported || (activeTeam !== null && activeTeam !== 'red')}
               >
-                토론 시작
+                레드팀 토론 시작
+              </button>
+              <button
+                type="button"
+                className={`sd-btn sd-btn-team sd-btn-team-blue ${activeTeam === 'blue' ? 'is-active' : ''}`}
+                onMouseDown={() => handleTeamPress('blue')}
+                onMouseUp={() => handleTeamRelease()}
+                onMouseLeave={() => handleTeamRelease()}
+                onTouchStart={(event) => {
+                  event.preventDefault();
+                  handleTeamPress('blue');
+                }}
+                onTouchEnd={() => handleTeamRelease()}
+                onTouchCancel={() => handleTeamRelease()}
+                disabled={!speechSupported || (activeTeam !== null && activeTeam !== 'blue')}
+              >
+                블루팀 토론 시작
               </button>
               <button
                 type="button"
@@ -388,7 +512,43 @@ export const SmartDiscussion = () => {
 
           <div className="sd-panel log-panel">
             <h3>토론 기록</h3>
-            <div className="sd-log-list">{logs.length ? logs.join('\n') : '아직 기록이 없어요.'}</div>
+            <div className="sd-log-list" ref={logListRef}>
+              {logs.length ? (
+                logs.map((log) => (
+                  <div key={log.id} className="sd-log-item">
+                    <span className="sd-log-time">{log.timestamp}</span>
+                    {log.team && <span className={`sd-log-badge team-${log.team}`}>{TEAM_LABELS[log.team]}</span>}
+                    <span className="sd-log-text">{log.text}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="sd-log-empty">아직 기록이 없어요.</div>
+              )}
+            </div>
+
+            <div className="sd-manual-log">
+              <label htmlFor="sd-manual-team" className="sd-manual-label">
+                텍스트 기록
+              </label>
+              <div className="sd-manual-fields">
+                <select
+                  id="sd-manual-team"
+                  value={noteTeam}
+                  onChange={(event) => setNoteTeam(event.target.value as Team)}
+                >
+                  <option value="red">레드팀</option>
+                  <option value="blue">블루팀</option>
+                </select>
+                <textarea
+                  value={noteText}
+                  onChange={(event) => setNoteText(event.target.value)}
+                  placeholder="친구들이 말한 내용을 직접 기록해 보세요."
+                />
+                <button type="button" onClick={handleManualLog}>
+                  기록 저장
+                </button>
+              </div>
+            </div>
           </div>
         </section>
       </div>

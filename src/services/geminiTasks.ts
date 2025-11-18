@@ -38,7 +38,7 @@ if (!API_KEY) {
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const TEXT_MODEL = import.meta.env.VITE_GEMINI_TEXT_MODEL || 'gemini-2.5-flash';
-const IMAGE_MODEL = import.meta.env.VITE_GEMINI_IMAGE_MODEL || 'gemini-1.5-flash';
+const IMAGE_MODEL = import.meta.env.VITE_GEMINI_IMAGE_MODEL || 'gemini-2.5-flash';
 
 const textModel = genAI.getGenerativeModel({ model: TEXT_MODEL });
 const imageModel = genAI.getGenerativeModel({ model: IMAGE_MODEL });

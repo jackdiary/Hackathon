@@ -27,6 +27,7 @@
 
 .title {
   margin: 0;
+  color: #000;
 }
 
 .desc {
@@ -89,4 +90,9 @@
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
+}
+.actionWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

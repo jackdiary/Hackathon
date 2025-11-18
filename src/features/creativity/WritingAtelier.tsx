@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import GlassButton from '../../shared/GlassButton';
+import LoadingVideo from '../../shared/LoadingVideo';
 import { requestWritingGuide } from '../../services/geminiTasks';
 import styles from './WritingAtelier.module.css';
 
-const gradeOptions = ['3학년', '4학년', '5학년', '6학년'] as const;
+const gradeOptions = ['1학년','2학년','3학년', '4학년', '5학년', '6학년'] as const;
 const genreOptions = ['동화', '에세이', '신문 기사', '극본'] as const;
 
 function WritingAtelier() {
@@ -68,9 +69,12 @@ function WritingAtelier() {
         </label>
       </div>
 
-      <GlassButton onClick={handleRun} disabled={loading}>
-        {loading ? '생성 중...' : '글쓰기 안내 생성'}
-      </GlassButton>
+      <div className={styles.actionWrapper}>
+        <GlassButton onClick={handleRun} disabled={loading}>
+          {loading ? '생성 중...' : '글쓰기 안내 생성'}
+        </GlassButton>
+        <LoadingVideo active={loading} />
+      </div>
 
       {error && <p className={styles.error}>{error}</p>}
 

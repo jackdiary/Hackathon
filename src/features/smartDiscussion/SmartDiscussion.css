@@ -435,7 +435,7 @@
 
 .sd-btn {
   flex: 1;
-  min-width: 140px;
+  min-width: 120px;
   padding: 9px 0;
   border-radius: 12px;
   border: none;
@@ -449,9 +449,28 @@
   cursor: not-allowed;
 }
 
-.sd-btn-start {
-  background: #ffcf90;
-  color: #5f3814;
+.sd-btn-team {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  align-items: center;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sd-btn-team-red {
+  background: #ffd1d7;
+  color: #7e1f2c;
+}
+
+.sd-btn-team-blue {
+  background: #d6e9ff;
+  color: #123b73;
+}
+
+.sd-btn-team.is-active {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.12) inset;
+  transform: translateY(-1px);
 }
 
 .sd-btn-stop {
@@ -459,16 +478,114 @@
   color: #70323c;
 }
 
+.sd-team-indicator {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.team-red {
+  background: rgba(255, 99, 132, 0.15);
+  color: #9f1239;
+}
+
+.team-blue {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1d4ed8;
+}
+
 .sd-log-list {
   min-height: 120px;
+  max-height: 220px;
   background: rgba(255, 255, 255, 0.85);
   border: 1px solid #e0c3a0;
   border-radius: 14px;
   padding: 10px;
   font-size: 13px;
   color: #3d372f;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.sd-log-item {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  line-height: 1.4;
+}
+
+.sd-log-time {
+  font-weight: 700;
+  color: #5b4b3a;
+}
+
+.sd-log-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sd-log-text {
+  flex: 1;
   white-space: pre-wrap;
-  line-height: 1.5;
+}
+
+.sd-log-empty {
+  font-style: italic;
+  color: #6b5d4b;
+}
+
+.sd-manual-log {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sd-manual-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4c4334;
+}
+
+.sd-manual-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sd-manual-fields select,
+.sd-manual-fields textarea {
+  width: 100%;
+  border: 1px solid #d9c2a9;
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.sd-manual-fields textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.sd-manual-fields button {
+  align-self: flex-end;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #ffd188;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .sd-mediation-card {

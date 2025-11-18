@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const initializeDatabase = require('./database/init');
 
@@ -20,15 +22,29 @@ console.log('✓ OpenAI key ready for guardrail routes');
 const db = initializeDatabase();
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'models/gemini-2.5-flash';
 let sejongModel = null;
+let sejongKnowledgeBase = '';
 
 if (GEMINI_KEY) {
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_KEY);
-    sejongModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    console.log('✓ Gemini client initialized');
+    sejongModel = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+    console.log(`✓ Gemini client initialized with model: ${GEMINI_MODEL}`);
   } catch (error) {
     console.error('Failed to initialize Gemini client:', error.message);
+  }
+
+  const knowledgeBasePath = path.join(__dirname, 'sejong_knowledge_base.txt');
+  try {
+    if (fs.existsSync(knowledgeBasePath)) {
+      sejongKnowledgeBase = fs.readFileSync(knowledgeBasePath, 'utf-8');
+      console.log('✓ Sejong knowledge base loaded');
+    } else {
+      console.warn(`⚠️  Knowledge base file not found at ${knowledgeBasePath}. Continuing without RAG.`);
+    }
+  } catch (error) {
+    console.warn('⚠️  Failed to load Sejong knowledge base:', error.message);
   }
 } else {
   console.warn('⚠️  GEMINI_API_KEY가 설정되지 않아 세종 인터뷰 기능이 비활성화됩니다.');
@@ -41,6 +57,7 @@ const sejongPersonaPrompt = `
 1. 왕의 말투(〜하노라, 〜이니라 등)를 사용합니다.
 2. 설명은 쉽고 짧게, 초등학생이 이해할 수 있도록 합니다.
 3. AI나 Gemini라는 표현을 쓰지 않고, 세종대왕 역할을 유지합니다.
+4. 주어진 '참고 자료'가 있다면, 그 내용을 바탕으로 답변해야 합니다. 자료에 없는 내용은 상상해서 말하지 마시오.
 `;
 
 // Middleware
@@ -230,6 +247,24 @@ app.post('/api/signup', (req, res) => {
   });
 });
 
+function retrieveKnowledge(question) {
+  if (!sejongKnowledgeBase) return '';
+  const keywords = question.split(/\s+/).filter((keyword) => keyword.length > 1);
+  const lines = sejongKnowledgeBase.split('\n');
+  const matches = new Set();
+
+  for (const line of lines) {
+    for (const keyword of keywords) {
+      if (line.includes(keyword)) {
+        matches.add(line);
+        break;
+      }
+    }
+  }
+
+  return [...matches].join('\n');
+}
+
 app.post('/api/ask-sejong', async (req, res) => {
   if (!sejongModel) {
     return res.status(500).json({ message: 'AI 키가 설정되지 않아 세종대왕이 응답할 수 없어요.' });
@@ -240,7 +275,17 @@ app.post('/api/ask-sejong', async (req, res) => {
     return res.status(400).json({ message: '무엇이 궁금한지 먼저 말해 주세요.' });
   }
 
-  const prompt = `${sejongPersonaPrompt}\n학생의 질문: "${question}"\n세종대왕의 답변:`;
+  const retrievedContext = retrieveKnowledge(question);
+
+  const prompt = `${sejongPersonaPrompt}
+---
+# 참고 자료
+${retrievedContext || '관련 자료 없음.'}
+---
+
+위 참고 자료를 바탕으로 다음 질문에 답하라.
+학생의 질문: "${question}"
+세종대왕의 답변:`;
 
   try {
     const result = await sejongModel.generateContent(prompt);

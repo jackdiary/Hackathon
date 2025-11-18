@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import GlassButton from '../../shared/GlassButton';
+import LoadingVideo from '../../shared/LoadingVideo';
 import { requestSparringScenario } from '../../services/geminiTasks';
 import styles from './SparringLab.module.css';
 
@@ -50,9 +51,12 @@ function SparringLab() {
         </label>
       </div>
 
-      <GlassButton onClick={handleRun} disabled={loading}>
-        {loading ? '생성 중...' : '창의력 스파링 실행'}
-      </GlassButton>
+      <div className={styles.actionWrapper}>
+        <GlassButton onClick={handleRun} disabled={loading}>
+          {loading ? '생성 중...' : '창의력 스파링 실행'}
+        </GlassButton>
+        <LoadingVideo active={loading} />
+      </div>
 
       {error && <p className={styles.error}>{error}</p>}
 
